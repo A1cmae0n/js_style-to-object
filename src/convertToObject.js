@@ -6,24 +6,24 @@
  * @return {object}
  */
 function convertToObject(sourceString) {
-  const cssDeclarations = sourceString.split(';');
-  let obj = {};
+  return sourceString
+    .split(';')
+    .map((declaration) => declaration.trim())
+    .filter((declaration) => declaration)
+    .reduce((result, declaration) => {
+      const colonPos = declaration.indexOf(':');
+      // move to the next declaration
+      if (colonPos === -1) return result;
 
-  for (const declaration of cssDeclarations) {
-    const colon = declaration.indexOf(':');
+      const property = declaration.substring(0, colonPos).trim();
+      const value = declaration.substring(colonPos + 1).trim();
 
-    if (colon === 0) continue;
+      if (property && value) {
+        result[property] = value;
+      }
 
-    const property = declaration.substring(0, colon).trim();
-    const value = declaration.substring(colon + 1).trim();
-
-    // check if entry is not just whitespace
-    if (property !== '' && value !== '') {
-      obj[property] = value;
-    }
-  }
-
-  return obj;
+      return result;
+    }, {});
 }
 
 module.exports = convertToObject;
